@@ -8,9 +8,13 @@ export const useProducts = (initialProducts: Product[]) => {
     setProducts(prevProducts => prevProducts.map(p => (p.id === updatedProduct.id ? updatedProduct : p)));
   };
 
+  const addProduct = (newProduct: Product) => {
+    setProducts(prevProducts => [...prevProducts, newProduct]);
+  };
+
   return {
     products,
     updateProduct,
-    addProduct: () => undefined,
+    addProduct,
   };
 };
