@@ -15,7 +15,11 @@ export const calculateItemTotal = (item: CartItem) => {
 };
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
-  return 0;
+  const { quantity } = item;
+  return item.product.discounts.reduce(
+    (maxDiscount, d) => (quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount),
+    0,
+  );
 };
 
 export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
