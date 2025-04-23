@@ -57,11 +57,11 @@ export const useCart = () => {
     setSelectedCoupon(coupon);
   };
 
-  const calculateTotal = () => ({
-    totalBeforeDiscount: 0,
-    totalAfterDiscount: 0,
-    totalDiscount: 0,
-  });
+  const calculateTotal = () => {
+    return calculateCartTotal(cart, selectedCoupon);
+  };
+
+  const { totalBeforeDiscount, totalAfterDiscount, totalDiscount } = calculateCartTotal(cart, selectedCoupon);
 
   return {
     cart,
@@ -69,7 +69,10 @@ export const useCart = () => {
     removeFromCart,
     updateQuantity,
     applyCoupon,
-    calculateTotal,
     selectedCoupon,
+    calculateTotal,
+    totalBeforeDiscount,
+    totalAfterDiscount,
+    totalDiscount,
   };
 };
