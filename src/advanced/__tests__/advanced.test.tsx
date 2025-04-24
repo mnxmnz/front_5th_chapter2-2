@@ -6,6 +6,8 @@ import { AdminPage } from '../../refactoring/pages/AdminPage';
 import { Coupon, Product } from '../../types';
 import { ProductProvider } from '../../refactoring/contexts/ProductContext';
 import { CouponProvider } from '../../refactoring/contexts/CouponContext';
+import { formatNumber, calculateDiscountRate } from '../../refactoring/utils/number';
+import { findMaxBy, findItemById } from '../../refactoring/utils/array';
 
 const mockProducts: Product[] = [
   {
@@ -237,11 +239,65 @@ describe('advanced > ', () => {
   });
 
   describe('자유롭게 작성해보세요.', () => {
-    test('새로운 유틸 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    describe('유틸리티 함수 테스트', () => {
+      test('formatNumber 함수는 숫자를 포맷팅하여 반환한다', () => {
+        const formattedInt = formatNumber(1000);
+        expect(formattedInt).toMatch(/1[,.]000/);
+
+        const formattedLargeInt = formatNumber(1000000);
+        expect(formattedLargeInt).toMatch(/1[,.]000[,.]000/);
+
+        const formattedFloat = formatNumber(1234.56);
+        expect(formattedFloat).toMatch(/1[,.]234[.,]56/);
+      });
+
+      test('calculateDiscountRate 함수는 할인율을 계산한다', () => {
+        expect(calculateDiscountRate(1000, 800)).toBe(20);
+        expect(calculateDiscountRate(1000, 500)).toBe(50);
+        expect(calculateDiscountRate(1000, 1000)).toBe(0);
+        expect(calculateDiscountRate(1000, 0)).toBe(100);
+      });
+
+      test('findMaxBy 함수는 배열에서 최대값을 찾는다', () => {
+        interface TestItem {
+          value: number;
+        }
+
+        const items: TestItem[] = [{ value: 10 }, { value: 20 }, { value: 5 }];
+        expect(findMaxBy(items, (item: TestItem) => item.value)).toBe(20);
+        expect(findMaxBy([], () => 0)).toBe(0);
+
+        interface Discount {
+          quantity: number;
+          rate: number;
+        }
+
+        const discounts: Discount[] = [
+          { quantity: 2, rate: 0.1 },
+          { quantity: 5, rate: 0.2 },
+          { quantity: 10, rate: 0.3 },
+        ];
+        expect(findMaxBy(discounts, (d: Discount) => d.rate)).toBe(0.3);
+      });
+
+      test('findItemById 함수는 ID로 아이템을 찾는다', () => {
+        interface TestItem {
+          id: string;
+          name: string;
+        }
+
+        const items: TestItem[] = [
+          { id: '1', name: 'Item 1' },
+          { id: '2', name: 'Item 2' },
+          { id: '3', name: 'Item 3' },
+        ];
+        expect(findItemById(items, '2')).toEqual({ id: '2', name: 'Item 2' });
+        expect(findItemById(items, '4')).toBeUndefined();
+        expect(findItemById([], '1')).toBeUndefined();
+      });
     });
 
-    test('새로운 hook 함수르 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
+    test('새로운 hook 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
       expect(true).toBe(false);
     });
   });
