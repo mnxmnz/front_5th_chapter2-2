@@ -1,13 +1,12 @@
 import { CartItem, Coupon } from '../../types';
+import { findMaxBy } from '../utils/array';
 
 export const calculateItemTotal = (item: CartItem) => {
   const { price } = item.product;
   const { quantity } = item;
   const totalBeforeDiscount = price * quantity;
 
-  const discount = item.product.discounts.reduce((maxDiscount, d) => {
-    return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
-  }, 0);
+  const discount = findMaxBy(item.product.discounts, d => (quantity >= d.quantity ? d.rate : 0));
 
   const totalAfterDiscount = totalBeforeDiscount * (1 - discount);
 
@@ -15,11 +14,7 @@ export const calculateItemTotal = (item: CartItem) => {
 };
 
 export const getMaxApplicableDiscount = (item: CartItem) => {
-  const { quantity } = item;
-  return item.product.discounts.reduce(
-    (maxDiscount, d) => (quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount),
-    0,
-  );
+  return findMaxBy(item.product.discounts, d => (item.quantity >= d.quantity ? d.rate : 0));
 };
 
 export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | null) => {
@@ -31,9 +26,7 @@ export const calculateCartTotal = (cart: CartItem[], selectedCoupon: Coupon | nu
     const { quantity } = item;
     totalBeforeDiscount += price * quantity;
 
-    const discount = item.product.discounts.reduce((maxDiscount, d) => {
-      return quantity >= d.quantity && d.rate > maxDiscount ? d.rate : maxDiscount;
-    }, 0);
+    const discount = findMaxBy(item.product.discounts, d => (quantity >= d.quantity ? d.rate : 0));
 
     totalAfterDiscount += price * quantity * (1 - discount);
   });
