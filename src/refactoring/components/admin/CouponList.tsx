@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { Coupon } from '../../../types.ts';
+import { useCouponContext } from '../../contexts/CouponContext';
 
-interface Props {
-  coupons: Coupon[];
-  onCouponAdd: (newCoupon: Coupon) => void;
-}
-
-export const CouponList = ({ coupons, onCouponAdd }: Props) => {
+export const CouponList = () => {
+  const { coupons, addCoupon } = useCouponContext();
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     name: '',
     code: '',
@@ -15,7 +12,7 @@ export const CouponList = ({ coupons, onCouponAdd }: Props) => {
   });
 
   const handleAddCoupon = () => {
-    onCouponAdd(newCoupon);
+    addCoupon(newCoupon);
     setNewCoupon({
       name: '',
       code: '',

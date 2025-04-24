@@ -4,6 +4,8 @@ import { AdminPage } from './pages/AdminPage.tsx';
 import { useCoupons, useProducts, useAdmin } from './hooks';
 import { initialProducts } from './data/products';
 import { initialCoupons } from './data/coupons';
+import { ProductProvider } from './contexts/ProductContext';
+import { CouponProvider } from './contexts/CouponContext';
 
 const App = () => {
   const { products } = useProducts(initialProducts);
@@ -29,17 +31,9 @@ const App = () => {
         </div>
       </nav>
       <main className="container mx-auto mt-6">
-        {isAdmin ? (
-          <AdminPage
-            products={admin.products}
-            coupons={admin.coupons}
-            onProductUpdate={admin.updateProduct}
-            onProductAdd={admin.addProduct}
-            onCouponAdd={admin.addCoupon}
-          />
-        ) : (
-          <CartPage products={products} coupons={coupons} />
-        )}
+        <ProductProvider initialProducts={admin.products}>
+          <CouponProvider initialCoupons={admin.coupons}>{isAdmin ? <AdminPage /> : <CartPage />}</CouponProvider>
+        </ProductProvider>
       </main>
     </div>
   );

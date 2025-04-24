@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { Product, Discount } from '../../../types.ts';
+import { useProductContext } from '../../contexts/ProductContext';
 
-interface Props {
-  products: Product[];
-  onProductUpdate: (updatedProduct: Product) => void;
-  onProductAdd: (newProduct: Product) => void;
-}
-
-export const ProductList = ({ products, onProductUpdate, onProductAdd }: Props) => {
+export const ProductList = () => {
+  const { products, updateProduct, addProduct } = useProductContext();
   const [openProductIds, setOpenProductIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newDiscount, setNewDiscount] = useState<Discount>({ quantity: 0, rate: 0 });
@@ -52,7 +48,7 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: Props) 
 
   const handleEditComplete = () => {
     if (editingProduct) {
-      onProductUpdate(editingProduct);
+      updateProduct(editingProduct);
       setEditingProduct(null);
     }
   };
@@ -61,7 +57,7 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: Props) 
     const updatedProduct = products.find(p => p.id === productId);
     if (updatedProduct) {
       const newProduct = { ...updatedProduct, stock: newStock };
-      onProductUpdate(newProduct);
+      updateProduct(newProduct);
       setEditingProduct(newProduct);
     }
   };
@@ -73,7 +69,7 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: Props) 
         ...updatedProduct,
         discounts: [...updatedProduct.discounts, newDiscount],
       };
-      onProductUpdate(newProduct);
+      updateProduct(newProduct);
       setEditingProduct(newProduct);
       setNewDiscount({ quantity: 0, rate: 0 });
     }
@@ -86,14 +82,14 @@ export const ProductList = ({ products, onProductUpdate, onProductAdd }: Props) 
         ...updatedProduct,
         discounts: updatedProduct.discounts.filter((_, i) => i !== index),
       };
-      onProductUpdate(newProduct);
+      updateProduct(newProduct);
       setEditingProduct(newProduct);
     }
   };
 
   const handleAddNewProduct = () => {
     const productWithId = { ...newProduct, id: Date.now().toString() };
-    onProductAdd(productWithId);
+    addProduct(productWithId);
     setNewProduct({
       name: '',
       price: 0,
