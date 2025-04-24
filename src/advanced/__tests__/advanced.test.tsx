@@ -8,6 +8,8 @@ import { ProductProvider } from '../../refactoring/contexts/ProductContext';
 import { CouponProvider } from '../../refactoring/contexts/CouponContext';
 import { formatNumber, calculateDiscountRate } from '../../refactoring/utils/number';
 import { findMaxBy, findItemById } from '../../refactoring/utils/array';
+import { renderHook } from '@testing-library/react';
+import { useAdmin } from '../../refactoring/hooks/useAdmin';
 
 const mockProducts: Product[] = [
   {
@@ -297,8 +299,47 @@ describe('advanced > ', () => {
       });
     });
 
-    test('새로운 hook 함수를 만든 후에 테스트 코드를 작성해서 실행해보세요', () => {
-      expect(true).toBe(false);
+    describe('훅 함수 테스트', () => {
+      test('useAdmin 훅은 상품과 쿠폰을 관리한다', () => {
+        const { result } = renderHook(() =>
+          useAdmin({
+            initialProducts: mockProducts,
+            initialCoupons: mockCoupons,
+          }),
+        );
+
+        expect(result.current.products).toEqual(mockProducts);
+        expect(result.current.coupons).toEqual(mockCoupons);
+
+        const updatedProduct = { ...mockProducts[0], name: '수정된 상품1' };
+        act(() => {
+          result.current.updateProduct(updatedProduct);
+        });
+        expect(result.current.products[0]).toEqual(updatedProduct);
+
+        const newProduct: Product = {
+          id: 'p4',
+          name: '상품4',
+          price: 40000,
+          stock: 30,
+          discounts: [{ quantity: 10, rate: 0.25 }],
+        };
+        act(() => {
+          result.current.addProduct(newProduct);
+        });
+        expect(result.current.products).toContainEqual(newProduct);
+
+        const newCoupon: Coupon = {
+          name: '20% 할인 쿠폰',
+          code: 'PERCENT20',
+          discountType: 'percentage',
+          discountValue: 20,
+        };
+        act(() => {
+          result.current.addCoupon(newCoupon);
+        });
+        expect(result.current.coupons).toContainEqual(newCoupon);
+      });
     });
   });
 });
